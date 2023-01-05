@@ -26,11 +26,11 @@
                 {% else %}
                     <div class="row align-items-center justify-content-center text-center">
                         <div class="col-4">
-                        <p class="text-white-75 mb-4">Informe o Registro Geral</p>
+                        <p class="text-white-75 mb-4">Informe o Número de Identificação</p>
                             <form action="{% url 'search' %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                     <input size="90%" class="form-control" type="search" name="searched"
-                                        placeholder="Informe o RG">
+                                        placeholder="Digite o Registro">
                                 </div>
                                 <div class="col-12 text-center mt-5">
                                     <button class="btn btn-primary btn-xl" type="submit">Buscar</button>
