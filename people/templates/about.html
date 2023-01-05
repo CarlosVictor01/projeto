@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'partials/menu.html' %}
+
+<header class="masthead">
+    <div class="contact-area section-padding-0-80">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+                        <h2 class="text-white font-weight-bold">Sobre</h2>
+                        <hr class="divider" />
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-center text-center">
+                <div class="col-5">
+                <p class="text-white-75 mb-4">O objetivo do sistema é permitir a automatização no processo de criação do modelo documento proposto. Insira as informações básicas pessoais e o documento estará disponível para download!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</header>
+
+{% include 'partials/footer.html' %}
+{% endblock %}

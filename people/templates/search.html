@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'partials/menu.html' %}
+
+<header class="masthead">
+    <div class="contact-area section-padding-0-80">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+                        <h2 class="text-white font-weight-bold">Buscar Identidade</h2>
+                        <hr class="divider" />
+                    </div>
+                </div>
+            </div>
+            <div>
+                {% if rg_submitted %}
+                    <div class="row gx-4 gx-lg-5 h-100 mt-5 align-items-center justify-content-center text-center">
+                        <p class="text-white-75 mb-4">Faça o download do documento!</p>
+                        <div class="col-12">
+                            <a href="{% url 'download_id' %}"><button class="btn btn-primary btn-xl">Baixar Identidade</button></a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row align-items-center justify-content-center text-center">
+                        <div class="col-4">
+                        <p class="text-white-75 mb-4">Informe o Registro Geral</p>
+                            <form action="{% url 'search' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                    <input size="90%" class="form-control" type="search" name="searched"
+                                        placeholder="Informe o RG">
+                                </div>
+                                <div class="col-12 text-center mt-5">
+                                    <button class="btn btn-primary btn-xl" type="submit">Buscar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>           
+        </div>
+    </div>
+</header>
+
+
+{% include 'partials/footer.html' %}
+{% endblock %}
