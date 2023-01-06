@@ -77,7 +77,7 @@ def form(request):
             img.delete()
 
             # Reading the certificate
-            with open(r"/home/carlos/Documentos/aplicacao_id/keys/certificado.pem", "rb") as f:
+            with open(r"/home/carlos/Documentos/projeto/id/keys/certificado.pem", "rb") as f:
                 certificate = f.read()
 
             # Encondig strings to bytes
@@ -95,7 +95,7 @@ def form(request):
             bytes_hashDataGroup = hash_dataGroup.encode('utf-8')
 
             # Generating the signature
-            with open(r"/home/carlos/Documentos/aplicacao_id/keys/private_key.pem") as f:
+            with open(r"/home/carlos/Documentos/projeto/id/keys/private_key.pem") as f:
                 sk = SigningKey.from_pem(f.read())
                 signature = sk.sign_deterministic(
                     bytes_hashDataGroup, sigencode=sigencode_der)
@@ -145,9 +145,9 @@ def form(request):
 
             # Writing template front
             font_1 = ImageFont.truetype(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/fonts/OpenSans-Bold.ttf", size=30)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=30)
             templateFront = Image.open(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/images_template/template_front.png")
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/front.png")
             pic = Image.open(form.cleaned_data['faceImage']).resize((275, 367))
             templateFront.paste(pic, (132, 161, 407, 528))
             draw = ImageDraw.Draw(templateFront)
@@ -173,9 +173,9 @@ def form(request):
 
             # Writing template verse
             font_3 = ImageFont.truetype(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/fonts/OpenSans-Medium.ttf", size=25)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=25)
             templateVerse = Image.open(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/images_template/template_verse.png")
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/verse.png")
             pic = Image.open("qr_code.png").resize((460, 470))
             templateVerse.paste(pic, (274, 27, 734, 497))
             draw = ImageDraw.Draw(templateVerse)
@@ -251,7 +251,7 @@ def search(request):
             nationality_value + sep + register + sep + birth_date_value
 
         # Reading the certificate
-        with open(r"/home/carlos/Documentos/aplicacao_id/keys/certificado.pem", "rb") as f:
+        with open(r"/home/carlos/Documentos/projeto/id/keys/certificado.pem", "rb") as f:
             certificate = f.read()
 
         # Encondig strings to bytes
@@ -269,7 +269,7 @@ def search(request):
         bytes_hashDataGroup = hash_dataGroup.encode('utf-8')
 
         # Generating the signature
-        with open(r"/home/carlos/Documentos/aplicacao_id/keys/private_key.pem") as f:
+        with open(r"/home/carlos/Documentos/projeto/id/keys/private_key.pem") as f:
             sk = SigningKey.from_pem(f.read())
             signature = sk.sign_deterministic(
                 bytes_hashDataGroup, sigencode=sigencode_der)
@@ -307,9 +307,9 @@ def search(request):
 
             # Writing template verse
             font_3 = ImageFont.truetype(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/fonts/OpenSans-Medium.ttf", size=25)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=25)
             templateVerse = Image.open(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/images_template/template_verse.png")
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/verse.png")
             pic = Image.open("qr_code.png").resize((460, 470))
             templateVerse.paste(pic, (274, 27, 734, 497))
             draw = ImageDraw.Draw(templateVerse)
@@ -318,9 +318,9 @@ def search(request):
 
             # Writing template front
             font_1 = ImageFont.truetype(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/fonts/OpenSans-Bold.ttf", size=30)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=30)
             templateFront = Image.open(
-                r"/home/carlos/Documentos/aplicacao_id/people/templates/images_template/template_front.png")
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/front.png")
             pic = Image.open(people.faceImage).resize((275, 367))
             templateFront.paste(pic, (132, 161, 407, 528))
             draw = ImageDraw.Draw(templateFront)
