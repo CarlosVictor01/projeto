@@ -138,65 +138,51 @@ def form(request):
             country = "Brazil"
 
             # Generating the MRZ
-            code = str(TD1CodeGenerator(document_type, nationality_value,
-                                        register, mrz_birth_date, genre_value,
-                                        mrz_expiry_date, country, surname_value,
-                                        name_value))
+            mrzCode = str(TD1CodeGenerator(document_type, nationality_value,
+                                           register, mrz_birth_date, genre_value,
+                                           mrz_expiry_date, country, surname_value,
+                                           name_value))
 
-            # Writing template front
+            # Reading fonts
             font_1 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=30)
-            templateFront = Image.open(
-                r"/home/carlos/Documentos/projeto/people/templates/id_templates/front.png")
-            pic = Image.open(form.cleaned_data['faceImage']).resize((275, 367))
-            templateFront.paste(pic, (132, 161, 407, 528))
-            draw = ImageDraw.Draw(templateFront)
-            draw.text(
-                (487, 185), form.cleaned_data['name'], font=font_1, width=31,
-                fill='black')
-            draw.text(
-                (487, 265), form.cleaned_data['surname'], font=font_1, width=31,
-                fill='black')
-            draw.text(
-                (487, 340), form.cleaned_data['genre'], font=font_1,
-                fill='black')
-            draw.text(
-                (733, 340), form.cleaned_data['nationality'], font=font_1,
-                fill='black')
-            draw.text(
-                (487, 420), register, font=font_1, fill='black')
-            draw.text(
-                (733, 420), birth_date_value, font=font_1, fill='black')
-            draw.text((487, 497), str(formated_expiry_date),
-                      font=font_1, fill='black')
-            templateFront.save('id_front.png', quality=100, optimize=True)
-
-            # Writing template verse
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=14)
             font_3 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=25)
-            templateVerse = Image.open(
-                r"/home/carlos/Documentos/projeto/people/templates/id_templates/verse.png")
-            pic = Image.open("qr_code.png").resize((460, 470))
-            templateVerse.paste(pic, (274, 27, 734, 497))
-            draw = ImageDraw.Draw(templateVerse)
-            draw.text((280, 525), code, font=font_3, fill='black')
-            templateVerse.save('id_verse.png', quality=100, optimize=True)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=17)
 
-            # Generating final identity image
-            img_front = Image.open('id_front.png')
-            img_verse = Image.open("id_verse.png")
+            # Reading template
+            template = Image.open(
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/template.png")
 
-            resized_img_front = img_front.resize((599, 420))
-            resized_img_verse = img_verse.resize((599, 420))
+            # Writing template
+            faceImage = Image.open(
+                form.cleaned_data['faceImage']).resize((115, 152))
+            template.paste(faceImage, (40, 79, 155, 231))
+            draw = ImageDraw.Draw(template)
+            draw.text(
+                (181, 83), form.cleaned_data['name'], font=font_1, width=31, fill='black')
+            draw.text(
+                (181, 119), form.cleaned_data['surname'], font=font_1, width=31, fill='black')
+            draw.text((181, 152), birth_date_value, font=font_1, fill='black')
+            draw.text(
+                (295, 152), form.cleaned_data['genre'], font=font_1, fill='black')
+            draw.text((181, 184), str(formated_expiry_date),
+                      font=font_1, fill='black')
+            draw.text(
+                (295, 184), form.cleaned_data['nationality'], font=font_1, fill='black')
+            draw.text((181, 216), register, font=font_1, fill='black')
+            draw.text((410, 200), mrzCode, font=font_3, fill='black')
 
-            img_final = Image.new("RGB", (1200, 420), "white")
+            # Pasting the qrcode
+            qrcodeImage = Image.open("qr_code.png").resize((186, 190))
+            template.paste(qrcodeImage, (474, 8, 660, 198))
 
-            img_final.paste(resized_img_front, (0, 0))
-            img_final.paste(resized_img_verse, (600, 0))
+            # Generating PDF
+            template.save('id.png', quality=100, optimize=True)
+            img = Image.open('id.png')
 
+            img_final = Image.new("RGB", (756, 275), "white")
+            img_final.paste(img)
             img_final.save("id_final.pdf")
-            # print(resized_img_front.size)
-            # print(resized_img_verse.size)
 
             return HttpResponseRedirect('form?submitted=True')
     else:
@@ -302,60 +288,48 @@ def search(request):
             country = "Brazil"
 
             # Generating MRZ
-            code = str(TD1CodeGenerator(document_type, nationality_value, register, mrz_birth_date, genre_value,
-                                        mrz_expiry_date, country, surname_value, name_value))
+            mrzCode = str(TD1CodeGenerator(document_type, nationality_value, register, mrz_birth_date, genre_value,
+                                           mrz_expiry_date, country, surname_value, name_value))
 
-            # Writing template verse
-            font_3 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=25)
-            templateVerse = Image.open(
-                r"/home/carlos/Documentos/projeto/people/templates/id_templates/verse.png")
-            pic = Image.open("qr_code.png").resize((460, 470))
-            templateVerse.paste(pic, (274, 27, 734, 497))
-            draw = ImageDraw.Draw(templateVerse)
-            draw.text((280, 525), code, font=font_3, fill='black')
-            templateVerse.save('id_verse.png', quality=100, optimize=True)
-
-            # Writing template front
+            # Reading fonts
             font_1 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=30)
-            templateFront = Image.open(
-                r"/home/carlos/Documentos/projeto/people/templates/id_templates/front.png")
-            pic = Image.open(people.faceImage).resize((275, 367))
-            templateFront.paste(pic, (132, 161, 407, 528))
-            draw = ImageDraw.Draw(templateFront)
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=14)
+            font_3 = ImageFont.truetype(
+                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=17)
 
-            draw.text((487, 185), people.name, font=font_1, width=31,
-                      fill='black')
-            draw.text((487, 265), people.surname, font=font_1, width=31,
-                      fill='black')
+            # Reading template
+            template = Image.open(
+                r"/home/carlos/Documentos/projeto/people/templates/id_templates/template.png")
+
+            # Writing template
+            faceImage = Image.open(people.faceImage).resize((115, 152))
+            template.paste(faceImage, (40, 79, 155, 231))
+            draw = ImageDraw.Draw(template)
             draw.text(
-                (487, 340), people.genre, font=font_1, fill='black')
+                (181, 83), people.name, font=font_1, width=31, fill='black')
             draw.text(
-                (733, 340), people.nationality, font=font_1,  fill='black')
+                (181, 119), people.surname, font=font_1, width=31, fill='black')
+            draw.text((181, 152), birth_date_value, font=font_1, fill='black')
             draw.text(
-                (487, 420), register, font=font_1, fill='black')
-            draw.text(
-                (733, 420), birth_date_value, font=font_1, fill='black')
-            draw.text((487, 497), str(formated_expiry_date),
+                (295, 152), people.genre, font=font_1, fill='black')
+            draw.text((181, 184), str(formated_expiry_date),
                       font=font_1, fill='black')
-            templateFront.save('id_front.png', quality=100, optimize=True)
+            draw.text(
+                (295, 184), people.nationality, font=font_1, fill='black')
+            draw.text((181, 216), register, font=font_1, fill='black')
+            draw.text((410, 200), mrzCode, font=font_3, fill='black')
 
-            # Generating final identity image
-            img_front = Image.open('id_front.png')
-            img_verse = Image.open("id_verse.png")
+            # Pasting the qrcode
+            qrcodeImage = Image.open("qr_code.png").resize((186, 190))
+            template.paste(qrcodeImage, (474, 8, 660, 198))
 
-            resized_img_front = img_front.resize((599, 420))
-            resized_img_verse = img_verse.resize((599, 420))
+            # Generating PDF
+            template.save('id.png', quality=100, optimize=True)
+            img = Image.open('id.png')
 
-            img_final = Image.new("RGB", (1200, 420), "white")
-
-            img_final.paste(resized_img_front, (0, 0))
-            img_final.paste(resized_img_verse, (600, 0))
-
+            img_final = Image.new("RGB", (756, 275), "white")
+            img_final.paste(img)
             img_final.save("id_final.pdf")
-            # print(resized_img_front.size)
-            # print(resized_img_verse.size)
 
         return HttpResponseRedirect('search?rg_submitted=True', {'people': people})
     else:
