@@ -15,6 +15,9 @@ from django.contrib import messages
 from mrz.generator.td1 import TD1CodeGenerator
 import random
 import string
+import os
+import sys
+from pathlib import Path
 
 
 def index(request):
@@ -66,6 +69,11 @@ def form(request):
                 genre_value + sep + nationality_value + sep + \
                 register + sep + birth_date_value
 
+            '''
+            with open('size-data-test.txt', 'w') as f:
+                f.write(data)
+            '''
+
             # Generating hash image
             img = form.cleaned_data.get("faceImage")
             obj = People.objects.create(faceImage=img)
@@ -100,10 +108,22 @@ def form(request):
                 signature = sk.sign_deterministic(
                     bytes_hashDataGroup, sigencode=sigencode_der)
 
-            # Generating the qrcode
-            info_qr = 'version=22;correction=low;box_size=10; \
-                border=4'
+            '''
+            with open('size-sig-test.sig', 'wb') as f:
+                f.write(signature)
+            '''
 
+            # Reading info
+            with open(r"/home/carlos/Documentos/projeto/version", "rb") as f:
+                header = f.read()
+
+            '''
+            testSize = os.path.getsize(
+                "/home/carlos/Documentos/projeto/version")
+            print(testSize)
+            '''
+
+            # Generating the qrcode
             qr = qrcode.QRCode(
                 version=22,
                 error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -111,7 +131,7 @@ def form(request):
                 border=4
             )
 
-            qr.add_data(info_qr)
+            qr.add_data(header)
             qr.add_data(personal_data)
             qr.add_data(personal_img_hash)
             qr.add_data(certificate)
@@ -260,76 +280,77 @@ def search(request):
             signature = sk.sign_deterministic(
                 bytes_hashDataGroup, sigencode=sigencode_der)
 
+        # Reading info
+            with open(r"/home/carlos/Documentos/projeto/version", "rb") as f:
+                header = f.read()
+
         # Generating the qrcode
-            info_qr = 'version=22;correction=low;box_size=10; \
-                border=4'
+        qr = qrcode.QRCode(
+            version=22,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4
+        )
 
-            qr = qrcode.QRCode(
-                version=22,
-                error_correction=qrcode.constants.ERROR_CORRECT_L,
-                box_size=10,
-                border=4
-            )
+        qr.add_data(header)
+        qr.add_data(personal_data)
+        qr.add_data(personal_img_hash)
+        qr.add_data(certificate)
+        qr.add_data(signature)
+        qr.make(fit=True)
 
-            qr.add_data(info_qr)
-            qr.add_data(personal_data)
-            qr.add_data(personal_img_hash)
-            qr.add_data(certificate)
-            qr.add_data(signature)
-            qr.make(fit=True)
+        img_qrcode = qr.make_image(fill_color="black", back_color="white")
+        img_qrcode.save('qr_code.png')
 
-            img_qrcode = qr.make_image(fill_color="black", back_color="white")
-            img_qrcode.save('qr_code.png')
+        date_object = people.birthDate
+        mrz_birth_date = date_object.strftime('%y%m%d'[0:8])
 
-            date_object = people.birthDate
-            mrz_birth_date = date_object.strftime('%y%m%d'[0:8])
+        document_type = "ID"
+        country = "Brazil"
 
-            document_type = "ID"
-            country = "Brazil"
+        # Generating MRZ
+        mrzCode = str(TD1CodeGenerator(document_type, nationality_value, register, mrz_birth_date, genre_value,
+                                       mrz_expiry_date, country, surname_value, name_value))
 
-            # Generating MRZ
-            mrzCode = str(TD1CodeGenerator(document_type, nationality_value, register, mrz_birth_date, genre_value,
-                                           mrz_expiry_date, country, surname_value, name_value))
+        # Reading fonts
+        font_1 = ImageFont.truetype(
+            r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=14)
+        font_3 = ImageFont.truetype(
+            r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=17)
 
-            # Reading fonts
-            font_1 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Bold.ttf", size=14)
-            font_3 = ImageFont.truetype(
-                r"/home/carlos/Documentos/projeto/people/templates/fonts/OpenSans-Medium.ttf", size=17)
+        # Reading template
+        template = Image.open(
+            r"/home/carlos/Documentos/projeto/people/templates/id_templates/template.png")
 
-            # Reading template
-            template = Image.open(
-                r"/home/carlos/Documentos/projeto/people/templates/id_templates/template.png")
+        # Writing template
+        faceImage = Image.open(people.faceImage).resize((115, 152))
+        template.paste(faceImage, (40, 79, 155, 231))
+        draw = ImageDraw.Draw(template)
+        draw.text(
+            (181, 83), people.name, font=font_1, width=31, fill='black')
+        draw.text(
+            (181, 119), people.surname, font=font_1, width=31, fill='black')
+        draw.text((181, 152), birth_date_value, font=font_1, fill='black')
+        draw.text(
+            (295, 152), people.genre, font=font_1, fill='black')
+        draw.text((181, 184), str(formated_expiry_date),
+                  font=font_1, fill='black')
+        draw.text(
+            (295, 184), people.nationality, font=font_1, fill='black')
+        draw.text((181, 216), register, font=font_1, fill='black')
+        draw.text((410, 200), mrzCode, font=font_3, fill='black')
 
-            # Writing template
-            faceImage = Image.open(people.faceImage).resize((115, 152))
-            template.paste(faceImage, (40, 79, 155, 231))
-            draw = ImageDraw.Draw(template)
-            draw.text(
-                (181, 83), people.name, font=font_1, width=31, fill='black')
-            draw.text(
-                (181, 119), people.surname, font=font_1, width=31, fill='black')
-            draw.text((181, 152), birth_date_value, font=font_1, fill='black')
-            draw.text(
-                (295, 152), people.genre, font=font_1, fill='black')
-            draw.text((181, 184), str(formated_expiry_date),
-                      font=font_1, fill='black')
-            draw.text(
-                (295, 184), people.nationality, font=font_1, fill='black')
-            draw.text((181, 216), register, font=font_1, fill='black')
-            draw.text((410, 200), mrzCode, font=font_3, fill='black')
+        # Pasting the qrcode
+        qrcodeImage = Image.open("qr_code.png").resize((186, 190))
+        template.paste(qrcodeImage, (474, 8, 660, 198))
 
-            # Pasting the qrcode
-            qrcodeImage = Image.open("qr_code.png").resize((186, 190))
-            template.paste(qrcodeImage, (474, 8, 660, 198))
+        # Generating PDF
+        template.save('id.png', quality=100, optimize=True)
+        img = Image.open('id.png')
 
-            # Generating PDF
-            template.save('id.png', quality=100, optimize=True)
-            img = Image.open('id.png')
-
-            img_final = Image.new("RGB", (756, 275), "white")
-            img_final.paste(img)
-            img_final.save("id_final.pdf")
+        img_final = Image.new("RGB", (756, 275), "white")
+        img_final.paste(img)
+        img_final.save("id_final.pdf")
 
         return HttpResponseRedirect('search?rg_submitted=True', {'people': people})
     else:
