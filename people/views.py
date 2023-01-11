@@ -173,7 +173,7 @@ def form(request):
             template = Image.open(
                 r"/home/carlos/Documentos/projeto/people/templates/id_templates/template.png")
 
-            # Writing template
+            # Writing template front
             faceImage = Image.open(
                 form.cleaned_data['faceImage']).resize((115, 152))
             template.paste(faceImage, (40, 79, 155, 231))
@@ -190,9 +190,9 @@ def form(request):
             draw.text(
                 (295, 184), form.cleaned_data['nationality'], font=font_1, fill='black')
             draw.text((181, 216), register, font=font_1, fill='black')
-            draw.text((410, 200), mrzCode, font=font_3, fill='black')
 
-            # Pasting the qrcode
+            # Writing template verse
+            draw.text((410, 200), mrzCode, font=font_3, fill='black')
             qrcodeImage = Image.open("qr_code.png").resize((186, 190))
             template.paste(qrcodeImage, (474, 8, 660, 198))
 
